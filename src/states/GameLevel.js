@@ -1,6 +1,6 @@
 // GameLevel is the state where the actual game levels are run
 class GameLevel extends Phaser.State {
-	
+    
     // This is called when the state is started. The parameters correspond to those given in the game.state.start call
     init(levelIndex, levelName) {
         if(levelIndex != undefined) {
@@ -20,8 +20,8 @@ class GameLevel extends Phaser.State {
         
     }
 
-	create() {
-        // this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    create() {
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
         if(this.level != undefined) {
             var mapVisuals = this.game.cache.getTilemapData(this.level.name + '_map_visuals').data;
@@ -40,12 +40,32 @@ class GameLevel extends Phaser.State {
         this.towers = this.game.add.group();
 
         this.projectiles = this.game.add.group();
-	}
+
+        this.createTower(BasicTower, 5, 1);
+        this.createTower(BasicTower, 6, 4);
+        this.createTower(BasicTower, 7, 1);
+        this.createTower(BasicTower, 8, 4);
+        this.createTower(BasicTower, 9, 1);
+        this.createTower(BasicTower, 10, 4);
+
+    }
 
     update() {
-        if(Math.random() <= 0.05) {
+        this.projectiles.forEachDead((projectile) => { projectile.destroy(); });
+        this.enemies.forEachDead((enemy) => { enemy.destroy(); });
+
+        console.log(this.projectiles.children.length);
+
+        if(Math.random() <= 0.15) {
             this.spawnAnt();
         }
+
+        this.game.physics.arcade.collide(this.projectiles, this.enemies, this.projectileHitEnemy);
+    }
+
+    projectileHitEnemy(projectile, enemy) {
+        var damageDone = enemy.takeDamage(projectile.damage);
+        projectile.takeDamage(damageDone);
     }
 
     spawnAnt() {
@@ -61,7 +81,17 @@ class GameLevel extends Phaser.State {
 
         return newPath;
     }
-	
+
+    createProjectile(projClass, spawnX, spawnY, velocityX, velocityY) {
+        var projectile = new projClass(this.game, spawnX, spawnY, velocityX, velocityY);
+        this.projectiles.add(projectile);
+    }
+
+    createTower(towerClass, gridX, gridY) {
+        var tower = new towerClass(this.game, this, gridX, gridY, this.map.tileWorldSize);
+        this.towers.add(tower);
+    }
+    
 }
 
 // This class serves as a wrapper around the Tilemap object
@@ -90,7 +120,7 @@ class Map {
             var dataRow = dataRows[y].split(',');
 
             for(var x = 0; x < visualsRow.length; x++) {
-                var tile = this.createTile(x, y, tileScaleFactor, parseInt(visualsRow[x]), parseInt(dataRow[x]));
+                var tile = this.createTile(x, y, parseInt(visualsRow[x]), parseInt(dataRow[x]));
 
                 tile.scale.setTo(tileScaleFactor, tileScaleFactor);
 
@@ -106,7 +136,7 @@ class Map {
         this.height = this.tilesArray[0].length;
     }
 
-    createTile(x, y, tileScaleFactor, visualsNum, dataNum) {
+    createTile(x, y, visualsNum, dataNum) {
         var type;
         var networkIndex;
 
@@ -131,7 +161,7 @@ class Map {
         }
 
 
-        return new Tile(this.game, x, y, this.tilePixelSize, tileScaleFactor, type, visualsNum, networkIndex);
+        return new Tile(this.game, x, y, this.tileWorldSize, type, visualsNum, networkIndex);
     }
 
     // Returns the tile located at the given world coordinates
@@ -153,8 +183,8 @@ class Map {
 
 class Tile extends Phaser.Sprite {
 
-    constructor(game, gridX, gridY, tileSize, tileScaleFactor, type, textureIndex, networkIndex) {
-        super(game, (gridX * tileSize) * tileScaleFactor, (gridY * tileSize) * tileScaleFactor, 'tiles', textureIndex);
+    constructor(game, gridX, gridY, tileWorldSize, type, textureIndex, networkIndex) {
+        super(game, gridX * tileWorldSize, gridY * tileWorldSize, 'tiles', textureIndex);
 
         this.gridX = gridX;
         this.gridY = gridY;
@@ -192,8 +222,19 @@ class Enemy extends Phaser.Sprite {
         this.pathIndex = 0;
         this.destination = this.path[this.pathIndex];
 
-        // this.enableBody = true;
-        // this.body.immovable = true;
+        this.game.physics.arcade.enable(this);
+        this.enableBody = true;
+        this.body.immovable = true;
+    }
+
+    takeDamage(damage) {
+        this.health -= damage;
+
+        if(this.health <= 0) {
+            this.kill();
+        }
+
+        return this.health <= 0 ? (damage + this.health) : damage;
     }
 
     update() {
@@ -210,7 +251,7 @@ class Ant extends Enemy {
             spawnY = path[0].y;
         }
 
-        super(game, spawnX, spawnY, 'ant', 200, 200, 80, path);
+        super(game, spawnX, spawnY, 'ant', 2, 2, 60, path);
 
         this.anchor = new Phaser.Point(0.5, 0.5);
     }
@@ -236,8 +277,59 @@ class Ant extends Enemy {
 
 class Tower extends Phaser.Sprite {
 
-    constructor() {
+    constructor(game, state, gridX, gridY, tileWorldSize, texture, range) {
+        super(game, gridX * tileWorldSize, gridY * tileWorldSize, texture);
 
+        this.state = state;
+
+        this.gridX = gridX;
+        this.gridY = gridY;
+        this.range = range;
+    }
+
+    getEnemiesInRange() {
+        var enemies = this.state.enemies;
+        var enemiesInRange = []
+
+        for(var i = 0; i < enemies.children.length; i++) {
+            if(enemies.children[i].alive) {
+                if(Phaser.Point.distance(new Phaser.Point(this.x, this.y), new Phaser.Point(enemies.children[i].x, enemies.children[i].y)) <= this.range) {
+                    enemiesInRange.push(enemies.children[i]);
+                }
+            }
+            
+        }
+
+        return enemiesInRange;
+    }
+
+}
+
+class BasicTower extends Tower {
+
+    constructor(game, state, gridX, gridY, tileWorldSize) {
+        super(game, state, gridX, gridY, tileWorldSize, 'tower_basic', 50);
+
+        this.projectileSpeed = 200;
+        this.shootDelay = 500;
+
+        this.nextShotTime = this.game.time.now;
+    }
+
+    update() {
+        if(this.nextShotTime <= this.game.time.now) {
+            var enemiesInRange = this.getEnemiesInRange();
+
+            if(enemiesInRange.length > 0) {
+                this.shoot(enemiesInRange[0].x, enemiesInRange[0].y);
+                this.nextShotTime = this.game.time.now + this.shootDelay;
+            }
+        }
+    }
+
+    shoot(x, y) {
+        var velocity = new Phaser.Point(x - this.x, y - this.y).setMagnitude(this.projectileSpeed);
+        this.state.createProjectile(ChargeProjectile, this.x, this.y, velocity.x, velocity.y);
     }
 
 }
@@ -246,13 +338,47 @@ class Tower extends Phaser.Sprite {
 
 class Projectile extends Phaser.Sprite {
 
-    constructor() {
+    constructor(game, spawnX, spawnY, texture, velocityX, velocityY, health, damage) {
+        super(game, spawnX, spawnY, texture);
 
+        this.health = health;
+        this.damage = damage;
+
+        this.game.physics.arcade.enable(this, Phaser.Physics.ARCADE);
+        this.enableBody = true;
+        this.body.immovable = true;
+
+        this.body.velocity.setTo(velocityX, velocityY);
+
+    }
+
+    update() {
+        if(this.inWorld == false) {
+            this.destroy();
+        }
+    }
+
+    takeDamage(damage) {
+        this.health -= damage;
+
+        if(this.health <= 0) {
+            this.kill();
+        }
+
+        return this.health <= 0 ? (damage + this.health) : damage;
     }
 
 }
 
+class ChargeProjectile extends Projectile {
 
+    constructor(game, spawnX, spawnY, velocityX, velocityY) {
+        super(game, spawnX, spawnY, 'charge', velocityX, velocityY, 2, 1);
+    }
+
+    
+
+}
 
 
 
