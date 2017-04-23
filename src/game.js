@@ -1,7 +1,7 @@
 class Game extends Phaser.Game {
 
 	constructor() {
-		super(480, 320, Phaser.CANVAS);
+		super(480, 300, Phaser.CANVAS);
 
 		this.globals = {};
 

@@ -1,3 +1,8 @@
 {
-	"spawnLocation": {"x": 0, "y": 0}
+	"enemyPath": [
+		{ "x": 0, "y": 3 },
+		{ "x": 19, "y": 3 },
+		{ "x": 19, "y": 24 }
+	],
+	"networksUsed": 2
 }
