@@ -1,10 +1,11 @@
+// Preload is the second state, switched to after Boot finishes
+// It is used to load all of the assets (images, sounds, json files etc) that are needed in the game up front
 class Preload extends Phaser.State {
 
 	preload() {
 		this.game.load.image('tiles', 'src/static/img/devTileset.png');
 
 		this.levelNames = this.game.cache.getJSON('levelList')["levels"];
-
 
 
 		for(var i = 0; i < this.levelNames.length; i++) {
