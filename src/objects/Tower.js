@@ -60,7 +60,7 @@ class BasicTower extends Tower {
 class PiercingTower extends Tower {
 
     constructor(game, state, gridX, gridY, tileWorldSize) {
-        super(game, state, gridX, gridY, tileWorldSize, 'tower_basic', Infinity);
+        super(game, state, gridX, gridY, tileWorldSize, 'tower_piercing', Infinity);
 
         this.projectileSpeed = 500;
         this.shootDelay = 2000;

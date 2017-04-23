@@ -1,10 +1,13 @@
-// This class serves as a wrapper around the Tilemap object
+// This class stores and manages an array of tiles
 class Map {
 
     constructor(game, mapVisuals, mapData, tilePixelSize, tileWorldSize) {
         this.game = game;
         this.tilePixelSize = tilePixelSize;
         this.tileWorldSize = tileWorldSize;
+
+        this.mouseEnteredTileCallbacks = [];
+        this.mouseClickedTileCallbacks = [];
 
         this.createTiles(mapVisuals, mapData);
     }
@@ -30,6 +33,10 @@ class Map {
 
                 this.game.add.existing(tile);
                 this.tilesContainer.add(tile);
+
+                tile.inputEnabled = true;
+                tile.events.onInputOver.add(this.onMouseEnteredTile, this);
+                tile.events.onInputUp.add(this.onMouseClickedTile, this);
 
                 this.tilesArray[x] = this.tilesArray[x] || [];
                 this.tilesArray[x][y] = tile;
@@ -81,6 +88,30 @@ class Map {
     // Returns the tile at the given grid coordinates
     getTile(x, y) {
         return this.tilesArray[x][y];
+    }
+
+    registerMouseEnteredTileCallback(callback, context) {
+        this.mouseEnteredTileCallbacks.push({ callback: callback, context: context });
+    }
+
+    onMouseEnteredTile(tile) {
+        if(this.mouseEnteredTileCallbacks.length > 0) {
+            for(var callback of this.mouseEnteredTileCallbacks) {
+                callback.callback.call(callback.context, tile);
+            }
+        }
+    }
+
+    registerMouseClickedTileCallback(callback, context) {
+        this.mouseClickedTileCallbacks.push({ callback: callback, context: context });
+    }
+
+    onMouseClickedTile(tile) {
+        if(this.mouseClickedTileCallbacks.length > 0) {
+            for(var callback of this.mouseClickedTileCallbacks) {
+                callback.callback.call(callback.context, tile);
+            }
+        }
     }
 
 }

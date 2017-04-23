@@ -9,6 +9,7 @@ class Preload extends Phaser.State {
 		this.game.load.image('ant', 'src/static/img/ant.png');
 		this.game.load.image('charge', 'src/static/img/charge.png');
 		this.game.load.image('tower_basic', 'src/static/img/tower_basic.png');
+		this.game.load.image('tower_piercing', 'src/static/img/tower_piercing.png');
 
 		this.levelNames = this.game.cache.getJSON('levelList')["levels"];
 
