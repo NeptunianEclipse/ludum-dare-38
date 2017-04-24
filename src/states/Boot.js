@@ -7,6 +7,8 @@ class Boot extends Phaser.State {
 		this.game.scale.pageAlignHorizontally = true;
 		this.game.scale.pageAlignVertically = true;
 
+		this.game.stage.smoothed = false;
+
 		this.game.load.json('levelList', 'src/static/levelData/levelList.json');
 	}
 

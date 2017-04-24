@@ -27,12 +27,16 @@ class Enemy extends Phaser.Sprite {
         this.game.physics.arcade.enable(this);
         this.enableBody = true;
         this.body.immovable = true;
-
-
     }
 
     nextDestination() {
-        return new Phaser.Point(this.path[this.pathIndex].x + this.anchor.x * this.width, this.path[this.pathIndex].y + this.anchor.y * this.height);
+        var destination = new Phaser.Point(this.path[this.pathIndex].x + (this.anchor.x + this.getRandomDeviation()) * this.width, this.path[this.pathIndex].y + (this.anchor.y + this.getRandomDeviation()) * this.height);
+        this.pathIndex++;
+        return destination;
+    }
+
+    getRandomDeviation() {
+        return Math.random() * 2 - 1;
     }
 
     takeDamage(damage) {
@@ -50,10 +54,21 @@ class Enemy extends Phaser.Sprite {
         this.x += directionVector.x * this.speed * this.game.time.physicsElapsed;
         this.y += directionVector.y * this.speed * this.game.time.physicsElapsed;
 
-        this.rotation = Math.atan2(directionVector.y, directionVector.x);
+        var targetRotation = Math.atan2(directionVector.y, directionVector.x);
+        
+        if(Math.abs(this.rotation - targetRotation) > 0.01) {
+            var angleDiff = targetRotation - this.rotation;
+
+            if(angleDiff > Math.PI) {
+                angleDiff -= 2 * Math.PI;
+            } else if(angleDiff < -Math.PI) {
+                angleDiff += 2 * Math.PI;
+            }
+
+            this.rotation += angleDiff * this.speed * this.game.time.physicsElapsed * 0.1;
+        }
 
         if(Phaser.Point.distance(new Phaser.Point(this.x, this.y), this.destination) < this.speed * this.game.time.physicsElapsed) {
-            this.pathIndex++;
             if(this.pathIndex < this.path.length) {
                 this.destination = this.nextDestination();
             }

@@ -8,7 +8,7 @@ class Map {
 
         var size = this.getCSVMapSize(mapVisuals);
         this.mapWidth = size.width;
-        this.mapHeight = size.height;
+        this.mapHeight = size.height - 1;
 
         this.tilePixelSize = tilePixelSize;
 
@@ -22,11 +22,16 @@ class Map {
             this.tileWorldSize = tilePixelSize;
         }
 
+        this.tileScaleFactor = this.tileWorldSize / this.tilePixelSize;
+
         this.worldWidth = this.tileWorldSize * this.mapWidth;
         this.worldHeight = this.tileWorldSize * this.mapHeight;
 
         this.mouseEnteredTileCallbacks = [];
         this.mouseClickedTileCallbacks = [];
+
+        this.background = this.game.add.tileSprite(0, 0, this.worldWidth / (this.tileScaleFactor * 2), this.worldHeight / (this.tileScaleFactor * 2), 'tileBackground');
+        this.background.scale.setTo(this.tileScaleFactor * 2, this.tileScaleFactor * 2);
 
         this.createTiles(mapVisuals, mapData);
     }
@@ -43,8 +48,6 @@ class Map {
         this.tilesContainer = this.game.add.group();
         this.tilesArray = [];
 
-        this.tileScaleFactor = this.tileWorldSize / this.tilePixelSize;
-
         var visualsRows = mapVisuals.split('\n');
         var dataRows = mapData.split('\n');
 
@@ -59,10 +62,6 @@ class Map {
 
                 this.game.add.existing(tile);
                 this.tilesContainer.add(tile);
-
-                tile.inputEnabled = true;
-                tile.events.onInputOver.add(this.onMouseEnteredTile, this);
-                tile.events.onInputUp.add(this.onMouseClickedTile, this);
 
                 this.tilesArray[x] = this.tilesArray[x] || [];
                 this.tilesArray[x][y] = tile;
@@ -103,8 +102,6 @@ class Map {
 
     // Returns the tile located at the given world coordinates
     getTileAtWorldCoord(x, y) {
-        var tileScaleFactor = this.tileWorldSize / this.tilePixelSize;
-
         var gridX = Math.floor(x / this.tileWorldSize);
         var gridY = Math.floor(y / this.tileWorldSize);
 
@@ -163,6 +160,8 @@ class Tile extends Phaser.Sprite {
     constructor(game, gridX, gridY, tileWorldSize, type, textureIndex, networkIndex) {
         super(game, gridX * tileWorldSize, gridY * tileWorldSize, 'tiles', textureIndex);
 
+        this.tint = Tile.defaultTint;
+
         this.gridX = gridX;
         this.gridY = gridY;
         this.textureIndex = textureIndex;
@@ -172,6 +171,8 @@ class Tile extends Phaser.Sprite {
     }
 
 }
+
+Tile.defaultTint = 0xFFA000;
 
 Tile.TileType = {
     circuitBoard: 1,

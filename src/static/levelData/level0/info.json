@@ -5,7 +5,33 @@
 		{ "x": 19, "y": 24 }
 	],
 	"networks": [
-		{"basePower": 5},
-		{"basePower": 10}
+		{
+			"basePower": 5,
+			"sourceLocation": { "x": 21, "y": 24, "direction": "down"}
+		},
+		{
+			"basePower": 10,
+			"sourceLocation": { "x": 17, "y": 24, "direction": "down"}
+		}
+	],
+	"waves": [
+		{
+			"length": 3000,
+			"enemies": [
+				{ "enemy": "Ant", "num": 10 }
+			]
+		},
+		{
+			"length": 3000,
+			"enemies": [
+				{ "enemy": "Ant", "num": 20 }
+			]
+		},
+		{
+			"length": 100,
+			"enemies": [
+				{ "enemy": "Ant", "num": 50 }
+			]
+		}
 	]
 }

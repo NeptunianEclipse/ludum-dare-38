@@ -12,6 +12,8 @@ class Tower extends Phaser.Sprite {
 
 }
 
+
+
 class TargetingTower extends Tower {
 
     constructor(game, state, gridX, gridY, tileWorldSize, texture, powerUsage, range, projectileClass, projectileSpeed, shootDelay) {
@@ -59,27 +61,89 @@ class TargetingTower extends Tower {
 
 }
 
-
 class BasicTower extends TargetingTower {
 
     constructor(game, state, gridX, gridY, tileWorldSize) {
-        super(game, state, gridX, gridY, tileWorldSize, 'tower_basic', 1, 50, ChargeProjectile, 200, 500);
+        super(game, state, gridX, gridY, tileWorldSize, BasicTower.const.key, BasicTower.const.powerUsage, BasicTower.const.range, BasicTower.const.projectileClass, BasicTower.const.projectileSpeed, BasicTower.const.shootDelay);
     }
 
+}
+BasicTower.const = {
+    name: 'Basic Tower',
+    key: 'tower_basic',
+    powerUsage: 1,
+    range: 100,
+    projectileClass: ChargeProjectile,
+    projectileSpeed: 200,
+    shootDelay: 500
 }
 
 class PiercingTower extends TargetingTower {
 
     constructor(game, state, gridX, gridY, tileWorldSize) {
-        super(game, state, gridX, gridY, tileWorldSize, 'tower_piercing', 2, 80, PiercingProjectile, 500, 2000);
+        super(game, state, gridX, gridY, tileWorldSize, PiercingTower.const.key, PiercingTower.const.powerUsage, PiercingTower.const.range, PiercingTower.const.projectileClass, PiercingTower.const.projectileSpeed, PiercingTower.const.shootDelay);
+    }
+
+}
+PiercingTower.const = {
+    name: 'Piercing Tower',
+    key: 'tower_piercing',
+    powerUsage: 2,
+    range: 160,
+    projectileClass: PiercingProjectile,
+    projectileSpeed: 500,
+    shootDelay: 2000
+}
+
+
+
+// Special towers are built with stored energy
+class SpecialTower extends Tower {
+
+    constructor(game, state, gridX, gridY, tileWorldSize, texture, powerUsage, energyCost) {
+        super(game, state, gridX, gridY, tileWorldSize, texture, powerUsage);
+
+        this.energyCost = energyCost;
     }
 
 }
 
-class GeneratorTower extends Tower {
+// Generator towers are built with energy and produce power
+class GeneratorTower extends SpecialTower {
 
     constructor(game, state, gridX, gridY, tileWorldSize) {
-        super(game, state, gridX, gridY, tileWorldSize, 'tower_generator', -5);
+        super(game, state, gridX, gridY, tileWorldSize, GeneratorTower.const.key, GeneratorTower.const.powerUsage, GeneratorTower.const.energyCost);
     }
 
 }
+GeneratorTower.const = {
+    name: 'Generator Tower',
+    key: 'tower_generator',
+    powerUsage: -5,
+    energyCost: 500
+}
+
+// Capacitor towers are built with energy and consume power, creating stored energy
+class CapacitorTower extends SpecialTower {
+
+    constructor(game, state, gridX, gridY, tileWorldSize) {
+        super(game, state, gridX, gridY, tileWorldSize, CapacitorTower.const.key, CapacitorTower.const.powerUsage, CapacitorTower.energyCost);
+    }
+
+    update() {
+        this.state.useEnergy(-CapacitorTower.const.energyRate * this.game.time.physicsElapsed)
+    }
+
+}
+CapacitorTower.const = {
+    name: 'Capacitor Tower',
+    key: 'tower_capacitor',
+    powerUsage: 5,
+    energyCost: 200,
+    energyRate: 2
+}
+
+
+
+
+

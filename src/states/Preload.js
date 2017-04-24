@@ -4,13 +4,17 @@ class Preload extends Phaser.State {
 
 	preload() {
 		this.game.load.spritesheet('tiles', 'src/static/img/tileset_visuals.png', 16, 16);
+		this.loadImage('tileBackground', 'tileBackground.png');
 
 		this.loadImage('box', 'box.png');
+		this.loadImage('whiteBox', 'whiteBox.png');
 		this.loadImage('ant', 'ant.png');
 		this.loadImage('charge', 'charge.png');
 		this.loadImage('tower_basic', 'tower_basic.png');
 		this.loadImage('tower_piercing', 'tower_piercing.png');
 		this.loadImage('tower_generator', 'tower_generator.png');
+		this.loadImage('tower_capacitor', 'tower_capacitor.png');
+		this.loadImage('powerIndicator', 'powerIndicator.png');
 
 		this.levelNames = this.game.cache.getJSON('levelList')["levels"];
 

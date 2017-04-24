@@ -17,8 +17,40 @@
 		{ "x": 18, "y": 24 }
 	],
 	"networks": [
-		{"basePower": 5},
-		{"basePower": 5},
-		{"basePower": 5}
+		{
+			"basePower": 5,
+			"sourceLocation": { "x": 12, "y": 0, "direction": "up"}
+		},
+		{
+			"basePower": 5,
+			"sourceLocation": { "x": 16, "y": 24, "direction": "down"}
+		},
+		{
+			"basePower": 5,
+			"sourceLocation": { "x": 24, "y": 15, "direction": "right"}
+		}
+	],
+	"waves": [
+		{
+			"length": 3000,
+			"enemyDistribution": "spread",
+			"enemies": [
+				{ "enemy": "Ant", "num": 10 }
+			]
+		},
+		{
+			"length": 5000,
+			"enemyDistribution": "spread",
+			"enemies": [
+				{ "enemy": "Ant", "num": 20 }
+			]
+		},
+		{
+			"length": 10000,
+			"enemyDistribution": "start",
+			"enemies": [
+				{ "enemy": "Ant", "num": 10 }
+			]
+		}
 	]
 }
