@@ -5,11 +5,12 @@ class Preload extends Phaser.State {
 	preload() {
 		this.game.load.spritesheet('tiles', 'src/static/img/tileset_visuals.png', 16, 16);
 
-		this.game.load.image('box', 'src/static/img/box.png');
-		this.game.load.image('ant', 'src/static/img/ant.png');
-		this.game.load.image('charge', 'src/static/img/charge.png');
-		this.game.load.image('tower_basic', 'src/static/img/tower_basic.png');
-		this.game.load.image('tower_piercing', 'src/static/img/tower_piercing.png');
+		this.loadImage('box', 'box.png');
+		this.loadImage('ant', 'ant.png');
+		this.loadImage('charge', 'charge.png');
+		this.loadImage('tower_basic', 'tower_basic.png');
+		this.loadImage('tower_piercing', 'tower_piercing.png');
+		this.loadImage('tower_generator', 'tower_generator.png');
 
 		this.levelNames = this.game.cache.getJSON('levelList')["levels"];
 
@@ -19,6 +20,10 @@ class Preload extends Phaser.State {
 
 			this.game.load.json(this.levelNames[i] + '_info', 'src/static/levelData/' + this.levelNames[i] + '/info.json');
 		}
+	}
+
+	loadImage(key, fileName) {
+		this.game.load.image(key, 'src/static/img/' + fileName);
 	}
 
 	create() {

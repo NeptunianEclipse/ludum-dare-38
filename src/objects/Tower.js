@@ -1,18 +1,33 @@
 class Tower extends Phaser.Sprite {
 
-    constructor(game, state, gridX, gridY, tileWorldSize, texture, range) {
+    constructor(game, state, gridX, gridY, tileWorldSize, texture, powerUsage) {
         super(game, gridX * tileWorldSize, gridY * tileWorldSize, texture);
 
         this.state = state;
 
         this.gridX = gridX;
         this.gridY = gridY;
+        this.powerUsage = powerUsage;
+    }
+
+}
+
+class TargetingTower extends Tower {
+
+    constructor(game, state, gridX, gridY, tileWorldSize, texture, powerUsage, range, projectileClass, projectileSpeed, shootDelay) {
+        super(game, state, gridX, gridY, tileWorldSize, texture, powerUsage);
+
         this.range = range;
+        this.projectileClass = projectileClass;
+        this.projectileSpeed = projectileSpeed;
+        this.shootDelay = shootDelay;
+
+        this.nextShotTime = this.game.time.now;
     }
 
     getEnemiesInRange() {
         var enemies = this.state.enemies;
-        var enemiesInRange = []
+        var enemiesInRange = [];
 
         for(var i = 0; i < enemies.children.length; i++) {
             if(enemies.children[i].alive) {
@@ -26,19 +41,6 @@ class Tower extends Phaser.Sprite {
         return enemiesInRange;
     }
 
-}
-
-class BasicTower extends Tower {
-
-    constructor(game, state, gridX, gridY, tileWorldSize) {
-        super(game, state, gridX, gridY, tileWorldSize, 'tower_basic', 50);
-
-        this.projectileSpeed = 200;
-        this.shootDelay = 500;
-
-        this.nextShotTime = this.game.time.now;
-    }
-
     update() {
         if(this.nextShotTime <= this.game.time.now) {
             var enemiesInRange = this.getEnemiesInRange();
@@ -52,36 +54,32 @@ class BasicTower extends Tower {
 
     shoot(x, y) {
         var velocity = new Phaser.Point(x - this.x, y - this.y).setMagnitude(this.projectileSpeed);
-        this.state.createProjectile(ChargeProjectile, this.x, this.y, velocity.x, velocity.y);
+        this.state.createProjectile(this.projectileClass, this.x, this.y, velocity.x, velocity.y);
     }
 
 }
 
-class PiercingTower extends Tower {
+
+class BasicTower extends TargetingTower {
 
     constructor(game, state, gridX, gridY, tileWorldSize) {
-        super(game, state, gridX, gridY, tileWorldSize, 'tower_piercing', Infinity);
-
-        this.projectileSpeed = 500;
-        this.shootDelay = 2000;
-
-        this.nextShotTime = this.game.time.now;
+        super(game, state, gridX, gridY, tileWorldSize, 'tower_basic', 1, 50, ChargeProjectile, 200, 500);
     }
 
-    update() {
-        if(this.nextShotTime <= this.game.time.now) {
-            var enemiesInRange = this.getEnemiesInRange();
+}
 
-            if(enemiesInRange.length > 0) {
-                this.shoot(enemiesInRange[0].x, enemiesInRange[0].y);
-                this.nextShotTime = this.game.time.now + this.shootDelay;
-            }
-        }
+class PiercingTower extends TargetingTower {
+
+    constructor(game, state, gridX, gridY, tileWorldSize) {
+        super(game, state, gridX, gridY, tileWorldSize, 'tower_piercing', 2, 80, PiercingProjectile, 500, 2000);
     }
 
-    shoot(x, y) {
-        var velocity = new Phaser.Point(x - this.x, y - this.y).setMagnitude(this.projectileSpeed);
-        this.state.createProjectile(PiercingProjectile, this.x, this.y, velocity.x, velocity.y);
+}
+
+class GeneratorTower extends Tower {
+
+    constructor(game, state, gridX, gridY, tileWorldSize) {
+        super(game, state, gridX, gridY, tileWorldSize, 'tower_generator', -5);
     }
 
 }

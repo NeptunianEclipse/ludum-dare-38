@@ -16,5 +16,9 @@
 		{ "x": 18, "y": 13 },
 		{ "x": 18, "y": 24 }
 	],
-	"networksUsed": 3
+	"networks": [
+		{"basePower": 5},
+		{"basePower": 5},
+		{"basePower": 5}
+	]
 }

@@ -37,6 +37,8 @@ class GameLevel extends Phaser.State {
 
         this.levelInfo = this.game.cache.getJSON(this.level.name + '_info');
 
+        this.networks = this.createNetworks();
+
         this.enemyPath = this.formatPath(this.levelInfo.enemyPath);
         this.enemies = this.game.add.group();
         this.towers = this.game.add.group();
@@ -57,6 +59,7 @@ class GameLevel extends Phaser.State {
         this.UI.towerButtons = {
             basicTower: this.game.add.button(this.game.width - 30, 10, 'tower_basic', () => { this.selectTower(BasicTower, 'tower_basic') } ),
             piercingTower: this.game.add.button(this.game.width - 30, 30, 'tower_piercing', () => { this.selectTower(PiercingTower, 'tower_piercing') } ),
+            generatorTower: this.game.add.button(this.game.width - 30, 50, 'tower_generator', () => { this.selectTower(GeneratorTower, 'tower_generator') })
         }
 
         this.UI.towerPreview = this.game.add.sprite(0, 0, null);
@@ -65,6 +68,18 @@ class GameLevel extends Phaser.State {
 
         this.selectTower(BasicTower, 'tower_basic');
 
+    }
+
+    createNetworks() {
+        var networkDataList = this.levelInfo.networks;
+        var networks = [];
+
+        for(var i = 0; i < networkDataList.length; i++) {
+            var network = new Network(this.game, this, i, networkDataList[i].basePower);
+            networks.push(network);
+        }
+
+        return networks;
     }
 
     selectTower(towerClass, textureKey) {
@@ -126,6 +141,17 @@ class GameLevel extends Phaser.State {
         var tower = new towerClass(this.game, this, gridX, gridY, this.map.tileWorldSize);
         tower.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
         this.towers.add(tower);
+
+        this.addTowerToNetwork(tower);
+    }
+
+    addTowerToNetwork(tower) {
+        var networkIndex = this.map.getTile(tower.gridX, tower.gridY).networkIndex;
+
+        this.networks[networkIndex].addTower(tower);
+        console.log("Tower added to network " + networkIndex);
+        console.log("Network power production: " + this.networks[networkIndex].getPowerProduction());
+        console.log("Network power usage: " + this.networks[networkIndex].getPowerUsage());
     }
 
     getTower(x, y) {

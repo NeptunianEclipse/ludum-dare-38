@@ -4,5 +4,8 @@
 		{ "x": 19, "y": 3 },
 		{ "x": 19, "y": 24 }
 	],
-	"networksUsed": 2
+	"networks": [
+		{"basePower": 5},
+		{"basePower": 10}
+	]
 }
