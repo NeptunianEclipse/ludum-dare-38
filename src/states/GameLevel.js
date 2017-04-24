@@ -27,7 +27,7 @@ class GameLevel extends Phaser.State {
             var mapVisuals = this.game.cache.getTilemapData(this.level.name + '_map_visuals').data;
             var mapData = this.game.cache.getTilemapData(this.level.name + '_map_data').data;
 
-            this.map = new Map(this.game, mapVisuals, mapData, 16, 12);
+            this.map = new Map(this.game, mapVisuals, mapData, 16, null, null, this.game.height - 50);
 
             this.map.registerMouseEnteredTileCallback(this.mouseEnteredTile, this);
             this.map.registerMouseClickedTileCallback(this.mouseClickedTile, this);
@@ -47,27 +47,31 @@ class GameLevel extends Phaser.State {
         this.createTower(PiercingTower, 5, 1);
 
         this.createUI();
+
+        this.game.camera.bounds = null;
+        this.game.camera.x = -40;
+        this.game.camera.y = -40;
     }
 
     createUI() {
         this.UI = {};
-
+        this.UI.group = this.game.add.group();
+        this.UI.group.fixedToCamera = true;
+        
         this.UI.selectedTower = null;
-
         this.UI.selectedTowerText = this.game.add.text(this.game.width - 175, 10, 'Selected: None', { fill: '#fff', fontSize: 12 });
+        
+        this.UI.basicTowerButton = this.game.add.button(this.game.width - 30, 10, 'tower_basic', () => { this.selectTower(BasicTower, 'tower_basic') } ),
+        this.UI.piercingTowerButton = this.game.add.button(this.game.width - 30, 30, 'tower_piercing', () => { this.selectTower(PiercingTower, 'tower_piercing') } ),
+        this.UI.generatorTowerButton = this.game.add.button(this.game.width - 30, 50, 'tower_generator', () => { this.selectTower(GeneratorTower, 'tower_generator') })     
 
-        this.UI.towerButtons = {
-            basicTower: this.game.add.button(this.game.width - 30, 10, 'tower_basic', () => { this.selectTower(BasicTower, 'tower_basic') } ),
-            piercingTower: this.game.add.button(this.game.width - 30, 30, 'tower_piercing', () => { this.selectTower(PiercingTower, 'tower_piercing') } ),
-            generatorTower: this.game.add.button(this.game.width - 30, 50, 'tower_generator', () => { this.selectTower(GeneratorTower, 'tower_generator') })
-        }
-
-        this.UI.towerPreview = this.game.add.sprite(0, 0, null);
-        this.UI.towerPreview.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
-        this.UI.towerPreview.alpha = 0.5;
+        this.UI.towerPreviewSprite = this.game.add.sprite(0, 0, null);
+        this.UI.towerPreviewSprite.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
+        this.UI.towerPreviewSprite.alpha = 0.5;
 
         this.selectTower(BasicTower, 'tower_basic');
 
+        this.UI.group.addMultiple([this.UI.selectedTowerText, this.UI.basicTowerButton, this.UI.piercingTowerButton, this.UI.generatorTowerButton]);
     }
 
     createNetworks() {
@@ -85,12 +89,12 @@ class GameLevel extends Phaser.State {
     selectTower(towerClass, textureKey) {
         this.UI.selectedTower = towerClass;
         this.UI.selectedTowerText.text = 'Selected: ' + towerClass.name;
-        this.UI.towerPreview.loadTexture(textureKey);
+        this.UI.towerPreviewSprite.loadTexture(textureKey);
     }
 
     mouseEnteredTile(tile) {
-        this.UI.towerPreview.x = tile.x;
-        this.UI.towerPreview.y = tile.y;
+        this.UI.towerPreviewSprite.x = tile.x;
+        this.UI.towerPreviewSprite.y = tile.y;
     }
 
     mouseClickedTile(tile) {
@@ -120,6 +124,7 @@ class GameLevel extends Phaser.State {
 
     spawnAnt() {
         var ant = new Ant(this.game, null, null, this.enemyPath);
+        ant.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
         this.enemies.add(ant);
     }
 
@@ -134,6 +139,7 @@ class GameLevel extends Phaser.State {
 
     createProjectile(projClass, spawnX, spawnY, velocityX, velocityY) {
         var projectile = new projClass(this.game, spawnX, spawnY, velocityX, velocityY);
+        projectile.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
         this.projectiles.add(projectile);
     }
 

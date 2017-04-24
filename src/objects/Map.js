@@ -1,15 +1,41 @@
 // This class stores and manages an array of tiles
 class Map {
 
-    constructor(game, mapVisuals, mapData, tilePixelSize, tileWorldSize) {
+    // The size of the map (rendered) can be set through either, 1. tileWorldSize, 2. targetWorldWidth or 3. targetWorldHeight
+    // (they are used in that order)
+    constructor(game, mapVisuals, mapData, tilePixelSize, tileWorldSize, targetWorldWidth, targetWorldHeight) {
         this.game = game;
+
+        var size = this.getCSVMapSize(mapVisuals);
+        this.mapWidth = size.width;
+        this.mapHeight = size.height;
+
         this.tilePixelSize = tilePixelSize;
-        this.tileWorldSize = tileWorldSize;
+
+        if(tileWorldSize != null) {
+            this.tileWorldSize = tileWorldSize;
+        } else if(targetWorldWidth != null) {
+            this.tileWorldSize = Math.floor(targetWorldWidth / this.mapWidth);
+        } else if(targetWorldHeight != null) {
+            this.tileWorldSize = Math.floor(targetWorldHeight / this.mapHeight);
+        } else {
+            this.tileWorldSize = tilePixelSize;
+        }
+
+        this.worldWidth = this.tileWorldSize * this.mapWidth;
+        this.worldHeight = this.tileWorldSize * this.mapHeight;
 
         this.mouseEnteredTileCallbacks = [];
         this.mouseClickedTileCallbacks = [];
 
         this.createTiles(mapVisuals, mapData);
+    }
+
+    getCSVMapSize(map) {
+        var lines = map.split('\n');
+        var line = lines[0].split(',');
+
+        return {width: line.length, height: lines.length};
     }
 
     // Creates the corresponding grid of tile sprites for the given CSV maps
@@ -29,7 +55,7 @@ class Map {
             for(var x = 0; x < visualsRow.length; x++) {
                 var tile = this.createTile(x, y, parseInt(visualsRow[x]), parseInt(dataRow[x]));
 
-                tile.scale.setTo(this.tileScaleFactor, this.tileScaleFactor);
+                tile.scale.setTo(this.tileScaleFactor * 1.05, this.tileScaleFactor * 1.05);
 
                 this.game.add.existing(tile);
                 this.tilesContainer.add(tile);
@@ -112,6 +138,22 @@ class Map {
                 callback.callback.call(callback.context, tile);
             }
         }
+    }
+
+    get x() {
+        return this.tilesContainer.x;
+    }
+
+    get y() {
+        return this.tilesContainer.y;
+    }
+
+    set x(val) {
+        this.tilesContainer.x = val;
+    }
+
+    set y(val) {
+        this.tilesContainer.y = val;
     }
 
 }
