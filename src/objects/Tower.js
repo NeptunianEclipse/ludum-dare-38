@@ -95,6 +95,28 @@ PiercingTower.const = {
     shootDelay: 2000
 }
 
+class FlamingTower extends TargetingTower {
+
+    constructor(game, state, gridX, gridY, tileWorldSize) {
+        super(game, state, gridX, gridY, tileWorldSize, FlameTower.const.key, FlameTower.const.powerUsage, FlameTower.const.range, FlameTower.const.projectileClass, FlameTower.const.projectileSpeed, FlameTower.const.shootDelay);
+    }
+
+    shoot(x, y) {
+        var velocity = new Phaser.Point(x - this.x, y - this.y).setMagnitude(this.projectileSpeed);
+        this.state.createProjectile(this.projectileClass, this.x, this.y, velocity.x, velocity.y, FlameTower.const.range);
+    }
+
+}
+FlameTower.const = {
+    name: 'Flame Tower',
+    key: 'tower_flame',
+    powerUsage: 3,
+    range: 50,
+    projectileClass: FlameProjectile,
+    projectileSpeed: 200,
+    shootDelay: 1000
+}
+
 
 
 // Special towers are built with stored energy
@@ -142,8 +164,3 @@ CapacitorTower.const = {
     energyCost: 200,
     energyRate: 2
 }
-
-
-
-
-

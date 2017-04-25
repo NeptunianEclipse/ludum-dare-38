@@ -55,3 +55,21 @@ class PiercingProjectile extends Projectile {
     }
 
 }
+
+class FlameProjectile extends Projectile {
+
+    constructor(game, spawnX, spawnY, velocityX, velocityY, range) {
+        super(game, spawnX, spawnY, 'charge', velocityX, velocityY, Infinity, 1);
+        this.spawnX = spawnX;
+        this.spawnY = spawnY;
+    }
+
+    update() {
+        if(this.inWorld == false) {
+            this.destroy();
+        }
+        if(Math.sqrt(Math.pow(Math.abs(this.x - this.spawnX), 2) + Math.pow(Math.abs(this.y - this.spawnY), 2)) >  ) {
+
+        }
+    }
+}
