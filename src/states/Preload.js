@@ -23,6 +23,8 @@ class Preload extends Phaser.State {
 			this.game.load.tilemap(this.levelNames[i] + '_map_data', 'src/static/levelData/' + this.levelNames[i] + '/map_data.csv', null, Phaser.Tilemap.CSV);
 
 			this.game.load.json(this.levelNames[i] + '_info', 'src/static/levelData/' + this.levelNames[i] + '/info.json');
+
+			console.log(this.levelNames[i] + '_info');
 		}
 	}
 
@@ -38,7 +40,8 @@ class Preload extends Phaser.State {
 				name: this.levelNames[i], 
 				map_visuals: this.game.cache.getTilemapData(this.levelNames[i] + '_map_visuals'),
 				map_data: this.game.cache.getTilemapData(this.levelNames[i] + '_map_data'),
-				info: this.game.cache.getJSON(this.levelNames[i] + '_info')
+				info: this.game.cache.getJSON(this.levelNames[i] + '_info'),
+				unlocked: i == 0 ? true : false
 			}
 			this.game.globals.levels.push(level);
 		}

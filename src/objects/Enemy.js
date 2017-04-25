@@ -3,13 +3,22 @@ class Enemy extends Phaser.Sprite {
     constructor(game, state, spawnX, spawnY, texture, maxHealth, initialHealth, speed, path, pathIndex) {
         super(game, spawnX, spawnY, texture);
 
+        this.state = state;
         this.path = path;
+<<<<<<< Updated upstream
 
         if(pathIndex == undefined) {
             pathIndex = 0;
         }
         this.pathIndex = pathIndex;
+=======
+>>>>>>> Stashed changes
 
+        if(pathIndex == undefined) {
+            pathIndex = 0;
+        }
+        this.pathIndex = pathIndex;
+        
         this.anchor = new Phaser.Point(0.5, 0.5);
 
         if(spawnX == undefined || spawnY == undefined) {
@@ -75,8 +84,16 @@ class Enemy extends Phaser.Sprite {
         if(Phaser.Point.distance(new Phaser.Point(this.x, this.y), this.destination) < this.speed * this.game.time.physicsElapsed) {
             if(this.pathIndex < this.path.length) {
                 this.destination = this.nextDestination();
+            } else {
+                this.reachedEnd();       
             }
         }
+    }
+
+    reachedEnd() {
+        this.state.reduceHealth(this.health);
+
+        this.kill();
     }
 
 }
@@ -84,12 +101,13 @@ class Enemy extends Phaser.Sprite {
 // basic enemy
 class Ant extends Enemy {
 
-    constructor(game, spawnX, spawnY, path) {
-        super(game, spawnX, spawnY, 'ant', 2, 2, 60, path);
+    constructor(game, state, spawnX, spawnY, path, pathIndex) {
+        super(game, state, spawnX, spawnY, 'ant', 2, 2, 60, path, pathIndex);
     }
 
 }
 
+<<<<<<< Updated upstream
 // bigger and slow
 class Beetle extends Enemy {
 
@@ -121,3 +139,5 @@ class Snail extends Enemy {
 }
 
 // constructor(game, spawnX, spawnY, texture, maxHealth, initialHealth, speed, path)
+=======
+>>>>>>> Stashed changes

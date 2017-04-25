@@ -2,7 +2,7 @@
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="25" height="25" tilewidth="16" tileheight="16" nextobjectid="1">
  <tileset firstgid="1" source="../../tilesets/tileset_visuals.tsx"/>
  <tileset firstgid="65" source="../../tilesets/tileset_data.tsx"/>
- <layer name="data" width="25" height="25">
+ <layer name="data" width="25" height="25" visible="0">
   <data encoding="csv">
 65,65,65,65,65,65,65,65,65,65,65,65,73,65,65,65,65,65,65,65,65,65,65,65,65,
 73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,65,65,65,65,

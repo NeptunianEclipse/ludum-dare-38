@@ -75,7 +75,7 @@ BasicTower.const = {
     range: 100,
     projectileClass: ChargeProjectile,
     projectileSpeed: 200,
-    shootDelay: 500
+    shootDelay: 1000
 }
 
 class PiercingTower extends TargetingTower {

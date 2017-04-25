@@ -1,55 +1,58 @@
 {
 	"enemyPath": [
-		{ "x": 0, "y": 3 },
-		{ "x": 10, "y": 3 },
-		{ "x": 10, "y": 9 },
-		{ "x": 4, "y": 9 },
-		{ "x": 4, "y": 16 },
-		{ "x": 8, "y": 16 },
-		{ "x": 8, "y": 13 },
-		{ "x": 14, "y": 13 },
-		{ "x": 14, "y": 3 },
-		{ "x": 18, "y": 3 },
-		{ "x": 18, "y": 9 },
-		{ "x": 21, "y": 9 },
-		{ "x": 21, "y": 13 },
-		{ "x": 18, "y": 13 },
-		{ "x": 18, "y": 24 }
+		{ "x": 21, "y": 0 },
+		{ "x": 21, "y": 11 },
+		{ "x": 17, "y": 11 },
+		{ "x": 17, "y": 5 },
+		{ "x": 3, "y": 5 },
+		{ "x": 3, "y": 21 },
+		{ "x": 17, "y": 21 },
+		{ "x": 17, "y": 15 },
+		{ "x": 24, "y": 15 }
 	],
 	"networks": [
 		{
-			"basePower": 5,
-			"sourceLocation": { "x": 12, "y": 0, "direction": "up"}
+			"basePower": 2,
+			"sourceLocation": { "x": 19, "y": 0, "direction": "up"}
 		},
 		{
 			"basePower": 5,
-			"sourceLocation": { "x": 16, "y": 24, "direction": "down"}
+			"sourceLocation": { "x": 24, "y": 13, "direction": "right"}
 		},
 		{
-			"basePower": 5,
-			"sourceLocation": { "x": 24, "y": 15, "direction": "right"}
+			"basePower": 2,
+			"sourceLocation": { "x": 24, "y": 17, "direction": "right"}
 		}
 	],
 	"waves": [
 		{
-			"length": 3000,
-			"enemyDistribution": "spread",
+			"length": 500,
+			"enemies": []
+		},
+		{
+			"length": 10000,
 			"enemies": [
 				{ "enemy": "Ant", "num": 10 }
 			]
 		},
 		{
-			"length": 5000,
-			"enemyDistribution": "spread",
+			"length": 2000,
+			"enemies": []
+		},
+		{
+			"length": 10000,
 			"enemies": [
 				{ "enemy": "Ant", "num": 20 }
 			]
 		},
 		{
+			"length": 2000,
+			"enemies": []
+		},
+		{
 			"length": 10000,
-			"enemyDistribution": "start",
 			"enemies": [
-				{ "enemy": "Ant", "num": 10 }
+				{ "enemy": "Ant", "num": 30 }
 			]
 		}
 	]

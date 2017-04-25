@@ -17,7 +17,6 @@ class GameLevel extends Phaser.State {
                 }
             }
         }
-
     }
 
     create() {
@@ -33,7 +32,6 @@ class GameLevel extends Phaser.State {
         }
 
         this.levelInfo = this.game.cache.getJSON(this.level.name + '_info');
-
         this.networks = this.createNetworks();
 
         this.enemyPath = this.formatPath(this.levelInfo.enemyPath);
@@ -42,6 +40,7 @@ class GameLevel extends Phaser.State {
         this.projectiles = this.game.add.group();
 
         this.storedEnergy = 400;
+        this.health = 20;
 
         this.createUI();
 
@@ -51,6 +50,8 @@ class GameLevel extends Phaser.State {
         this.game.world.bringToTop(this.towers);
         this.game.world.bringToTop(this.UI.rangeGraphics);
         this.UI.towerPreviewSprite.bringToTop();
+        this.game.world.bringToTop(this.UI.gameLostDialog);
+        this.game.world.bringToTop(this.UI.gameWonDialog);
 
         this.game.input.addMoveCallback(this.mouseMoved, this);
         this.game.input.onUp.add(this.mouseClicked, this);
@@ -145,14 +146,14 @@ class GameLevel extends Phaser.State {
         this.UI.uiGraphics = this.game.add.graphics(0, 0);
 
         // Draw sidebar
-        this.UI.uiGraphics.beginFill(0x404040, 1);
+        this.UI.uiGraphics.beginFill(0x202020, 1);
         this.UI.uiGraphics.drawRect(sidebarLeft, 0, sidebarWidth, this.game.height);
 
-        this.UI.levelText = this.game.add.text(sidebarLeft + 20, 20, 'Level 2 - RAM', { fill: '#FFF', fontSize: 26});
-        this.UI.exitButton = this.game.add.existing(new LabelButton(this.game, this.game.width - 120, 20, 100, 40, 'Exit'));
+        this.UI.levelText = this.game.add.text(sidebarLeft + 20, 20, 'Level ' + this.levelIndex, { fill: '#FFF', fontSize: 26});
+        this.UI.exitButton = this.game.add.existing(new LabelButton(this.game, this.game.width - 120, 20, 100, 40, 'Exit', this.mainMenu, this));
 
         // Draw description box
-        this.UI.uiGraphics.beginFill(0x505050, 1);
+        this.UI.uiGraphics.beginFill(0x404040, 1);
         this.UI.uiGraphics.drawRect(sidebarLeft + 20, 100, sidebarWidth - 40, 120);
 
         this.UI.selectedTowerPreview = this.game.add.sprite(sidebarLeft + 40, 120);
@@ -164,7 +165,7 @@ class GameLevel extends Phaser.State {
         this.UI.basicTowersText = this.game.add.text(sidebarLeft + 20, 240, 'Basic Towers', { fill: '#FFF', fontSize: 24});
 
         // Draw basic towers box
-        this.UI.uiGraphics.beginFill(0x505050, 1);
+        this.UI.uiGraphics.beginFill(0x404040, 1);
         this.UI.uiGraphics.drawRect(sidebarLeft + 20, 280, sidebarWidth - 40, 120);
 
         // Create basic tower selection buttons
@@ -184,7 +185,7 @@ class GameLevel extends Phaser.State {
         this.UI.specialTowersText = this.game.add.text(sidebarLeft + 20, 420, 'Special Towers', { fill: '#FFF', fontSize: 24});
 
         // Draw special towers box
-        this.UI.uiGraphics.beginFill(0x505050, 1);
+        this.UI.uiGraphics.beginFill(0x404040, 1);
         this.UI.uiGraphics.drawRect(sidebarLeft + 20, 460, sidebarWidth - 40, 120);
 
         // Create special tower selection buttons
@@ -202,11 +203,24 @@ class GameLevel extends Phaser.State {
         }
 
         // Draw energy box
-        this.UI.uiGraphics.beginFill(0x505050, 1);
+        this.UI.uiGraphics.beginFill(0x404040, 1);
         this.UI.uiGraphics.drawRect(sidebarLeft + 20, 620, sidebarWidth - 40, 60);
 
         this.UI.energyText = this.game.add.text(sidebarLeft + 40, 640, 'Stored Energy: ' + this.storedEnergy, { fill: '#FFF', fontSize: 24});
 
+        // Draw health box
+        this.UI.uiGraphics.beginFill(0x404040, 1);
+        this.UI.uiGraphics.drawRect(sidebarLeft + 20, 700, sidebarWidth - 40, 60);
+
+        this.UI.healthText = this.game.add.text(sidebarLeft + 40, 720, 'Health: ' + this.health, { fill: '#FFF', fontSize: 24});
+
+
+        // Dialogs
+        this.UI.gameWonDialog = this.createGameWonDialog();
+        this.UI.gameWonDialog.visible = false;
+
+        this.UI.gameLostDialog = this.createGameLostDialog();
+        this.UI.gameLostDialog.visible = false;
 
         this.UI.fixedGroup.addMultiple([
             this.UI.uiGraphics,
@@ -217,9 +231,63 @@ class GameLevel extends Phaser.State {
             this.UI.specialTowersText,
             this.UI.selectedTowerText,
             this.UI.energyText,
-            this.UI.descriptionText
+            this.UI.healthText,
+            this.UI.descriptionText,
+            this.UI.gameWonDialog,
+            this.UI.gameLostDialog
         ].concat(Object.values(this.basicTowerButtons)).concat(Object.values(this.specialTowerButtons)));
 
+    }
+
+    createGameWonDialog() {
+        var gameWonDialog = this.game.add.group();
+        var dialogWidth = 500;
+        var dialogHeight = 300;
+
+        gameWonDialog.x = this.game.width / 2 - dialogWidth / 2;
+        gameWonDialog.y = this.game.height / 2 - dialogHeight / 2;
+
+        var graphics = this.game.add.graphics(0, 0);
+        gameWonDialog.add(graphics);
+
+        graphics.beginFill(0x505050, 1);
+        graphics.drawRect(0, 0, dialogWidth, dialogHeight);
+
+        var text = this.game.add.text(0, 0, 'Level passed!', { fill: '#FFF',  fontSize: 60, boundsAlignH: 'center', boundsAlignV: 'middle'});
+        text.setTextBounds(0, 0, dialogWidth, dialogHeight - 50);
+
+        var exitButton = this.game.add.existing(new LabelButton(this.game, 40, dialogHeight - 60, 200, 40, 'Exit', this.mainMenu, this));
+        if(this.levelIndex < this.game.globals.levels.length - 1) {
+            var nextButton = this.game.add.existing(new LabelButton(this.game, dialogWidth - 240, dialogHeight - 60, 200, 40, 'Next level', this.nextLevel, this));
+            gameWonDialog.add(nextButton);
+        }
+        
+        gameWonDialog.addMultiple([text, exitButton]);
+
+        return gameWonDialog;
+    }
+
+    createGameLostDialog() {
+        var gameLostDialog = this.game.add.group();
+        var dialogWidth = 500;
+        var dialogHeight = 300;
+
+        gameLostDialog.x = this.game.width / 2 - dialogWidth / 2;
+        gameLostDialog.y = this.game.height / 2 - dialogHeight / 2;
+
+        var graphics = this.game.add.graphics(0, 0);
+        graphics.beginFill(0x505050, 1);
+        graphics.drawRect(0, 0, dialogWidth, dialogHeight);
+
+        var text = this.game.add.text(0, 0, 'Level failed', { fill: '#FFF',  fontSize: 60, boundsAlignH: 'center', boundsAlignV: 'middle'});
+        text.setTextBounds(0, 0, dialogWidth, dialogHeight - 50);
+
+        var exitButton = this.game.add.existing(new LabelButton(this.game, 40, dialogHeight - 60, 200, 40, 'Exit', this.mainMenu, this));
+        var retryButton = this.game.add.existing(new LabelButton(this.game, dialogWidth - 240, dialogHeight - 60, 200, 40, 'Retry', this.retry, this));
+
+        gameLostDialog.addMultiple([graphics, text, exitButton, retryButton]);
+
+        return gameLostDialog;
     }
 
     showNetworkHighlight(networkIndex) {
@@ -402,7 +470,7 @@ class GameLevel extends Phaser.State {
         }
 
         if(this.wavesFinished && this.enemies.total == 0) {
-            alert('Level won!');
+            this.gameWon();
         }
 
 
@@ -463,9 +531,6 @@ class GameLevel extends Phaser.State {
         var networkIndex = this.map.getTile(tower.gridX, tower.gridY).networkIndex;
 
         this.networks[networkIndex].addTower(tower);
-        // console.log("Tower added to network " + networkIndex);
-        // console.log("Network power production: " + this.networks[networkIndex].getPowerProduction());
-        // console.log("Network power usage: " + this.networks[networkIndex].getPowerUsage());
     }
 
     getTower(x, y) {
@@ -483,6 +548,47 @@ class GameLevel extends Phaser.State {
         this.UI.energyText.text = 'Stored Energy: ' + Math.round(this.storedEnergy);
     }
 
+    gameWon() {
+        this.game.paused = true;
+
+        if(this.levelIndex < this.game.globals.levels.length - 1) {
+            this.game.globals.levels[this.levelIndex + 1].unlocked = true;
+        }
+        
+        this.UI.gameWonDialog.visible = true;
+    }
+
+    gameLost() {
+        this.game.paused = true;
+
+        this.UI.gameLostDialog.visible = true;
+    }
+
+    mainMenu() {
+        this.game.paused = false;
+        this.game.state.start('MainMenu', true, null);
+    }
+
+    retry() {
+        this.game.paused = false;
+        this.game.state.restart(true, null, this.levelIndex);
+    }
+
+    nextLevel() {
+        this.game.paused = false;
+        this.game.state.restart(true, null, this.levelIndex + 1);
+    }
+
+    reduceHealth(amount) {
+        this.health -= amount;
+
+        this.UI.healthText.text = 'Health: ' + this.health;
+
+        if(this.health <= 0) {
+            this.gameLost();
+        }
+    }
+
 }
 
 class LabelButton extends Phaser.Button {
@@ -493,12 +599,17 @@ class LabelButton extends Phaser.Button {
         this.tint = 0x606060;
         this.scale.setTo(width / 16, height / 16);
 
-        this.textStyle = { fontSize: 25, fill: 0xFFFFFF, boundsAlignH: 'center', boundsAlignV: 'center' }
+        this.textStyle = { fontSize: 25, fill: '#FFF', boundsAlignH: 'center', boundsAlignV: 'middle' }
         this.label = new Phaser.Text(game, 0, 0, text, this.textStyle);
         this.label.setTextBounds(0, 0, width, height);
         this.label.scale.setTo(1 / this.scale.x, 1 / this.scale.y)
 
         this.addChild(this.label);
+    }
+
+    disable() {
+        this.tint = 0x303030;
+        this.inputEnabled = false;
     }
 
     get text() {
