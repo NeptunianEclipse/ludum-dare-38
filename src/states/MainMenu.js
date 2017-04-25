@@ -3,13 +3,14 @@
 class MainMenu extends Phaser.State {
 
 	create() {
-		this.createUI();
-
-		
+		this.createUI();		
 	}
 
 	createUI() {
 		this.UI = {};
+
+		this.background = this.game.add.tileSprite(0, 0, this.game.width / 4, this.game.height / 4, 'tileBackground');
+		this.background.scale.setTo(4, 4);
 
 		this.UI.titleText = this.game.add.text(10, 10, 'Debug Defence', { fontSize: 50, fill: '#FFF', boundsAlignH: 'center', boundsAlignV: 'middle' });
 		this.UI.titleText.setTextBounds(10, 10, this.game.width - 20, 200);

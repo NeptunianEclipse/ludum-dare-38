@@ -39,7 +39,7 @@ class GameLevel extends Phaser.State {
         this.towers = this.game.add.group();
         this.projectiles = this.game.add.group();
 
-        this.storedEnergy = 400;
+        this.storedEnergy = 200;
         this.health = 20;
 
         this.createUI();
@@ -61,7 +61,9 @@ class GameLevel extends Phaser.State {
         this.game.camera.y = -50;
 
         this.enemyClasses = {
-            'Ant': Ant
+            'Ant': Ant,
+            'Beetle': Beetle,
+            'Snail': Snail
         }
 
         this.waveIndex = 0;
@@ -154,39 +156,39 @@ class GameLevel extends Phaser.State {
 
         // Draw description box
         this.UI.uiGraphics.beginFill(0x404040, 1);
-        this.UI.uiGraphics.drawRect(sidebarLeft + 20, 100, sidebarWidth - 40, 120);
+        this.UI.uiGraphics.drawRect(sidebarLeft + 20, 100, sidebarWidth - 40, 160);
 
         this.UI.selectedTowerPreview = this.game.add.sprite(sidebarLeft + 40, 120);
         this.UI.selectedTowerPreview.scale.setTo(this.map.tileScaleFactor * 3, this.map.tileScaleFactor  * 3);
         this.UI.selectedTowerText = this.game.add.text(sidebarLeft + 140, 120, 'None', { fill: '#fff', fontSize: 20 });
 
-        this.UI.descriptionText = this.game.add.text(sidebarLeft + 140, 160, 'Consumes 5 power', { fill: '#FFF', fontSize: 16});
+        this.UI.descriptionText = this.game.add.text(sidebarLeft + 140, 160, 'Consumes 5 power', { fill: '#FFF', fontSize: 16, font: 'Arial', wordWrap: true, wordWrapWidth: 230});
 
-        this.UI.basicTowersText = this.game.add.text(sidebarLeft + 20, 240, 'Basic Towers', { fill: '#FFF', fontSize: 24});
+        this.UI.basicTowersText = this.game.add.text(sidebarLeft + 20, 290, 'Basic Towers', { fill: '#FFF', fontSize: 24});
 
         // Draw basic towers box
         this.UI.uiGraphics.beginFill(0x404040, 1);
-        this.UI.uiGraphics.drawRect(sidebarLeft + 20, 280, sidebarWidth - 40, 120);
+        this.UI.uiGraphics.drawRect(sidebarLeft + 20, 330, sidebarWidth - 40, 90);
 
         // Create basic tower selection buttons
-        var basicTowerButtonClasses = [BasicTower, PiercingTower];
+        var basicTowerButtonClasses = [BasicTower, PiercingTower, FlameTower];
         this.basicTowerButtons = {};
         for(var i = 0; i < basicTowerButtonClasses.length; i++) {
             (function(i) {
                 var towerClass = basicTowerButtonClasses[i];
 
-                var button = this.game.add.button(sidebarLeft + 80 * i + 40, 300, towerClass.const.key, () => { this.selectTower(towerClass) });
+                var button = this.game.add.button(sidebarLeft + 80 * i + 40, 350, towerClass.const.key, () => { this.selectTower(towerClass) });
                 button.scale.setTo(this.map.tileScaleFactor * 2, this.map.tileScaleFactor * 2);
 
                 this.basicTowerButtons[towerClass.const.name] = button;
             }).call(this, i);
         }
 
-        this.UI.specialTowersText = this.game.add.text(sidebarLeft + 20, 420, 'Special Towers', { fill: '#FFF', fontSize: 24});
+        this.UI.specialTowersText = this.game.add.text(sidebarLeft + 20, 440, 'Special Towers', { fill: '#FFF', fontSize: 24});
 
         // Draw special towers box
         this.UI.uiGraphics.beginFill(0x404040, 1);
-        this.UI.uiGraphics.drawRect(sidebarLeft + 20, 460, sidebarWidth - 40, 120);
+        this.UI.uiGraphics.drawRect(sidebarLeft + 20, 480, sidebarWidth - 40, 90);
 
         // Create special tower selection buttons
         var specialTowerButtonClasses = [GeneratorTower, CapacitorTower];
@@ -195,7 +197,7 @@ class GameLevel extends Phaser.State {
             (function(i) {
                 var towerClass = specialTowerButtonClasses[i];
 
-                var button = this.game.add.button(sidebarLeft + 80 * i + 40, 480, towerClass.const.key, () => { this.selectTower(towerClass) });
+                var button = this.game.add.button(sidebarLeft + 80 * i + 40, 500, towerClass.const.key, () => { this.selectTower(towerClass) });
                 button.scale.setTo(this.map.tileScaleFactor * 2, this.map.tileScaleFactor * 2);
 
                 this.specialTowerButtons[towerClass.const.name] = button;
@@ -344,7 +346,7 @@ class GameLevel extends Phaser.State {
         this.UI.selectedTower = towerClass;
         this.UI.selectedTowerText.text = towerClass.const.name;
 
-        var descriptionString = 'Consumes ' + this.UI.selectedTower.const.powerUsage + ' power';
+        var descriptionString = this.UI.selectedTower.const.description + '\nConsumes ' + this.UI.selectedTower.const.powerUsage + ' power';
         if(this.UI.selectedTower.prototype instanceof SpecialTower) {
             descriptionString += '\nCosts ' + this.UI.selectedTower.const.energyCost + ' energy to build';
         }
@@ -379,7 +381,6 @@ class GameLevel extends Phaser.State {
         for(var i = 0; i < this.wave.enemies.length; i++) {
             (function(i) {
                 var enemyInterval = this.wave.length / this.wave.enemies[i].num;
-                console.log(enemyInterval);
                 this.waveEnemies[i] = { "enemy": this.enemyClasses[this.wave.enemies[i].enemy], "num": this.wave.enemies[i].num, "interval": enemyInterval, "nextSpawn": this.game.time.now + enemyInterval };
             }).call(this, i);
         }
@@ -484,8 +485,8 @@ class GameLevel extends Phaser.State {
         }
     }
 
-    spawnEnemy(enemyClass, x, y) {
-        var enemy = new enemyClass(this.game, this, x, y, this.enemyPath);
+    spawnEnemy(enemyClass, x, y, pathIndex) {
+        var enemy = new enemyClass(this.game, this, x, y, this.enemyPath, pathIndex);
         enemy.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
         this.enemies.add(enemy);
     }
@@ -499,8 +500,8 @@ class GameLevel extends Phaser.State {
         return newPath;
     }
 
-    createProjectile(projClass, spawnX, spawnY, velocityX, velocityY) {
-        var projectile = new projClass(this.game, spawnX, spawnY, velocityX, velocityY);
+    createProjectile(projClass, spawnX, spawnY, velocityX, velocityY, ...otherArgs) {
+        var projectile = new projClass(this.game, spawnX, spawnY, velocityX, velocityY, ...otherArgs);
         projectile.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
         this.projectiles.add(projectile);
     }
@@ -553,6 +554,7 @@ class GameLevel extends Phaser.State {
 
         if(this.levelIndex < this.game.globals.levels.length - 1) {
             this.game.globals.levels[this.levelIndex + 1].unlocked = true;
+            localStorage.setItem('levelUnlocked', (this.levelIndex + 1).toString());
         }
         
         this.UI.gameWonDialog.visible = true;

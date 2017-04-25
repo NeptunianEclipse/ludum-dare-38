@@ -69,12 +69,13 @@ class BasicTower extends TargetingTower {
 
 }
 BasicTower.const = {
-    name: 'Basic Tower',
+    name: 'Zapper',
     key: 'tower_basic',
+    description: 'Shoots small electric charges.',
     powerUsage: 1,
     range: 100,
     projectileClass: ChargeProjectile,
-    projectileSpeed: 200,
+    projectileSpeed: 400,
     shootDelay: 1000
 }
 
@@ -86,16 +87,17 @@ class PiercingTower extends TargetingTower {
 
 }
 PiercingTower.const = {
-    name: 'Piercing Tower',
+    name: 'Bolt Generator',
     key: 'tower_piercing',
+    'description': 'Bolts pierce through many bugs.',
     powerUsage: 2,
-    range: 160,
+    range: 180,
     projectileClass: PiercingProjectile,
-    projectileSpeed: 500,
-    shootDelay: 2000
+    projectileSpeed: 1000,
+    shootDelay: 2500
 }
 
-class FlamingTower extends TargetingTower {
+class FlameTower extends TargetingTower {
 
     constructor(game, state, gridX, gridY, tileWorldSize) {
         super(game, state, gridX, gridY, tileWorldSize, FlameTower.const.key, FlameTower.const.powerUsage, FlameTower.const.range, FlameTower.const.projectileClass, FlameTower.const.projectileSpeed, FlameTower.const.shootDelay);
@@ -108,13 +110,14 @@ class FlamingTower extends TargetingTower {
 
 }
 FlameTower.const = {
-    name: 'Flame Tower',
+    name: 'Flamethrower',
     key: 'tower_flame',
-    powerUsage: 3,
-    range: 50,
+    'description': 'Constantly burns close bugs.',
+    powerUsage: 8,
+    range: 80,
     projectileClass: FlameProjectile,
     projectileSpeed: 200,
-    shootDelay: 1000
+    shootDelay: 50
 }
 
 
@@ -139,10 +142,11 @@ class GeneratorTower extends SpecialTower {
 
 }
 GeneratorTower.const = {
-    name: 'Generator Tower',
+    name: 'Generator',
     key: 'tower_generator',
-    powerUsage: -5,
-    energyCost: 500
+    'description': 'Generates power for the circuit it is attached to.',
+    powerUsage: -3,
+    energyCost: 260
 }
 
 // Capacitor towers are built with energy and consume power, creating stored energy
@@ -158,9 +162,10 @@ class CapacitorTower extends SpecialTower {
 
 }
 CapacitorTower.const = {
-    name: 'Capacitor Tower',
+    name: 'Capacitor',
     key: 'tower_capacitor',
-    powerUsage: 5,
-    energyCost: 200,
-    energyRate: 2
+    'description': 'Generates stored energy for building special towers.',
+    powerUsage: 2,
+    energyCost: 100,
+    energyRate: 5
 }

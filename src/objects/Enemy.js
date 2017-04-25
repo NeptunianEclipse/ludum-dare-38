@@ -5,14 +5,11 @@ class Enemy extends Phaser.Sprite {
 
         this.state = state;
         this.path = path;
-<<<<<<< Updated upstream
 
         if(pathIndex == undefined) {
             pathIndex = 0;
         }
         this.pathIndex = pathIndex;
-=======
->>>>>>> Stashed changes
 
         if(pathIndex == undefined) {
             pathIndex = 0;
@@ -43,7 +40,7 @@ class Enemy extends Phaser.Sprite {
     }
 
     nextDestination() {
-        var destination = new Phaser.Point(this.path[this.pathIndex].x + (this.anchor.x + this.getRandomDeviation()) * this.width, this.path[this.pathIndex].y + (this.anchor.y + this.getRandomDeviation()) * this.height);
+        var destination = new Phaser.Point(this.path[this.pathIndex].x + (this.anchor.x + this.getRandomDeviation()) * this.state.map.tileWorldSize, this.path[this.pathIndex].y + (this.anchor.y + this.getRandomDeviation()) * this.state.map.tileWorldSize);
         this.pathIndex++;
         return destination;
     }
@@ -102,17 +99,16 @@ class Enemy extends Phaser.Sprite {
 class Ant extends Enemy {
 
     constructor(game, state, spawnX, spawnY, path, pathIndex) {
-        super(game, state, spawnX, spawnY, 'ant', 2, 2, 60, path, pathIndex);
+        super(game, state, spawnX, spawnY, 'enemy_ant', 2, 2, 120, path, pathIndex);
     }
 
 }
 
-<<<<<<< Updated upstream
 // bigger and slow
 class Beetle extends Enemy {
 
-    constructor(game, state, spawnX, spawnY, path) {
-        super(game, state, spawnX, spawnY, 'beetle', 6, 6, 40, path);
+    constructor(game, state, spawnX, spawnY, path, pathIndex) {
+        super(game, state, spawnX, spawnY, 'enemy_beetle', 6, 6, 60, path, pathIndex);
     }
 }
 
@@ -120,16 +116,21 @@ class Beetle extends Enemy {
 class Snail extends Enemy {
 
     constructor(game, state, spawnX, spawnY, path) {
-        super(game, state, spawnX, spawnY, 'snail', 20, 20, 10, path);
+        super(game, state, spawnX, spawnY, 'enemy_snail', 20, 20, 40, path);
     }
 
     takeDamage(damage) {
         this.health -= damage;
 
         if(this.health <= 0) {
-            // i is the number of ants which a snail spawns.
-            for(var i = 0; i < 15; i++) {
-                state.spawnEnemy(Ant, this.x + Math.random() - 0.5, this.y + Math.random() - 0.5, this.pathIndex);
+            // Spawn ants
+            for(var i = 0; i < 20; i++) {
+                this.state.spawnEnemy(Ant, this.x + this.getRandomDeviation(), this.y + this.getRandomDeviation(), this.pathIndex - 1);
+            }
+
+            // Spawn beetles
+            for(var i = 0; i < 12; i++) {
+                this.state.spawnEnemy(Beetle, this.x + this.getRandomDeviation(), this.y + this.getRandomDeviation(), this.pathIndex - 1);
             }
             this.kill();
         }
@@ -137,7 +138,3 @@ class Snail extends Enemy {
         return this.health <= 0 ? (damage + this.health) : damage;
     }
 }
-
-// constructor(game, spawnX, spawnY, texture, maxHealth, initialHealth, speed, path)
-=======
->>>>>>> Stashed changes

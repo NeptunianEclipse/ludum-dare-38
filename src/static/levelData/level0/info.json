@@ -12,27 +12,27 @@
 	],
 	"networks": [
 		{
-			"basePower": 2,
+			"basePower": 4,
 			"sourceLocation": { "x": 0, "y": 1, "direction": "left"}
 		},
 		{
-			"basePower": 2,
+			"basePower": 4,
 			"sourceLocation": { "x": 0, "y": 5, "direction": "left"}
 		},
 		{
-			"basePower": 5,
+			"basePower": 4,
 			"sourceLocation": { "x": 5, "y": 24, "direction": "down"}
 		}
 	],
 	"waves": [
 		{
-			"length": 500,
+			"length": 2000,
 			"enemies": []
 		},
 		{
-			"length": 10000,
+			"length": 8000,
 			"enemies": [
-				{ "enemy": "Ant", "num": 10 }
+				{ "enemy": "Ant", "num": 8 }
 			]
 		},
 		{
@@ -40,9 +40,9 @@
 			"enemies": []
 		},
 		{
-			"length": 10000,
+			"length": 16000,
 			"enemies": [
-				{ "enemy": "Ant", "num": 20 }
+				{ "enemy": "Ant", "num": 64 }
 			]
 		},
 		{
@@ -50,9 +50,29 @@
 			"enemies": []
 		},
 		{
-			"length": 10000,
+			"length": 16000,
 			"enemies": [
-				{ "enemy": "Ant", "num": 30 }
+				{ "enemy": "Ant", "num": 80 }
+			]
+		},
+		{
+			"length": 2000,
+			"enemies": []
+		},
+		{
+			"length": 16000,
+			"enemies": [
+				{ "enemy": "Ant", "num": 100 }
+			]
+		},
+		{
+			"length": 8000,
+			"enemies": []
+		},
+		{
+			"length": 16000,
+			"enemies": [
+				{ "enemy": "Ant", "num": 140 }
 			]
 		}
 	]

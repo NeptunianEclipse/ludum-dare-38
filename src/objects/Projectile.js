@@ -43,7 +43,7 @@ class Projectile extends Phaser.Sprite {
 class ChargeProjectile extends Projectile {
 
     constructor(game, spawnX, spawnY, velocityX, velocityY) {
-        super(game, spawnX, spawnY, 'charge', velocityX, velocityY, 2, 1);
+        super(game, spawnX, spawnY, 'projectile_charge', velocityX, velocityY, 1, 2);
     }
 
 }
@@ -51,7 +51,7 @@ class ChargeProjectile extends Projectile {
 class PiercingProjectile extends Projectile {
 
     constructor(game, spawnX, spawnY, velocityX, velocityY) {
-        super(game, spawnX, spawnY, 'charge', velocityX, velocityY, Infinity, 1);
+        super(game, spawnX, spawnY, 'projectile_piercing', velocityX, velocityY, Infinity, 1);
     }
 
 }
@@ -59,17 +59,24 @@ class PiercingProjectile extends Projectile {
 class FlameProjectile extends Projectile {
 
     constructor(game, spawnX, spawnY, velocityX, velocityY, range) {
-        super(game, spawnX, spawnY, 'charge', velocityX, velocityY, Infinity, 1);
+        super(game, spawnX, spawnY, 'projectile_flame', velocityX, velocityY, Infinity, 0.3);
+
         this.spawnX = spawnX;
         this.spawnY = spawnY;
+        this.range = range;
     }
 
     update() {
         if(this.inWorld == false) {
             this.destroy();
         }
-        if(Math.sqrt(Math.pow(Math.abs(this.x - this.spawnX), 2) + Math.pow(Math.abs(this.y - this.spawnY), 2)) >  ) {
 
+        var distance = Phaser.Point.distance(new Phaser.Point(this.x, this.y), new Phaser.Point(this.spawnX, this.spawnY));
+
+        if(distance > this.range) {
+            this.destroy();
         }
+
+        this.alpha = Math.min(1.5 - distance / this.range, 1);
     }
 }

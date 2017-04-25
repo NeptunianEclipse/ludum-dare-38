@@ -18,38 +18,69 @@
 	],
 	"networks": [
 		{
-			"basePower": 2,
+			"basePower": 4,
 			"sourceLocation": { "x": 12, "y": 0, "direction": "up"}
 		},
 		{
-			"basePower": 2,
+			"basePower": 4,
 			"sourceLocation": { "x": 16, "y": 24, "direction": "down"}
 		},
 		{
-			"basePower": 5,
+			"basePower": 4,
 			"sourceLocation": { "x": 24, "y": 15, "direction": "right"}
 		}
 	],
 	"waves": [
 		{
-			"length": 1000,
-			"enemyDistribution": "spread",
+			"length": 2000,
+			"enemies": []
+		},
+		{
+			"length": 8000,
 			"enemies": [
-				{ "enemy": "Ant", "num": 10 }
+				{ "enemy": "Ant", "num": 8 }
 			]
 		},
 		{
 			"length": 2000,
-			"enemyDistribution": "spread",
+			"enemies": []
+		},
+		{
+			"length": 32000,
 			"enemies": [
-				{ "enemy": "Ant", "num": 20 }
+				{ "enemy": "Beetle", "num": 40 }
 			]
 		},
 		{
-			"length": 5000,
-			"enemyDistribution": "start",
+			"length": 2000,
+			"enemies": []
+		},
+		{
+			"length": 16000,
 			"enemies": [
-				{ "enemy": "Ant", "num": 10 }
+				{ "enemy": "Ant", "num": 50 },
+				{ "enemy": "Beetle", "num": 30 }
+			]
+		},
+		{
+			"length": 2000,
+			"enemies": []
+		},
+		{
+			"length": 32000,
+			"enemies": [
+				{ "enemy": "Ant", "num": 140 },
+				{ "enemy": "Beetle", "num": 100 }
+			]
+		},
+		{
+			"length": 8000,
+			"enemies": []
+		},
+		{
+			"length": 16000,
+			"enemies": [
+				{ "enemy": "Snail", "num": 10 }
 			]
 		}
 	]
