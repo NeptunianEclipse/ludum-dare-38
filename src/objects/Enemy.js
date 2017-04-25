@@ -109,7 +109,10 @@ class Snail extends Enemy {
         this.health -= damage;
 
         if(this.health <= 0) {
-            state.spawnEnemy(Ant, this.x, this.y, this.pathIndex);
+            // i is the number of ants which a snail spawns.
+            for(var i = 0; i < 15; i++) {
+                state.spawnEnemy(Ant, this.x + Math.random() - 0.5, this.y + Math.random() - 0.5, this.pathIndex);
+            }
             this.kill();
         }
 
