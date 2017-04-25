@@ -70,7 +70,7 @@ class GameLevel extends Phaser.State {
 
     createUI() {
         this.UI = {};
-        
+
         this.UI.selectedTower = null;
 
         this.createFixedUI();
@@ -95,7 +95,7 @@ class GameLevel extends Phaser.State {
 
             var indicatorSprite = this.game.add.sprite((network.sourceX + xOff * 1 + 0.5) * this.map.tileWorldSize, (network.sourceY + yOff * 1 + 0.5) * this.map.tileWorldSize, 'powerIndicator');
             var indicatorText = this.game.add.text(this.map.tileWorldSize * 0.25, 0, 'P', { fill: '#000', fontSize: 25 });
-            
+
             indicatorSprite.anchor.setTo(0.5, 0.5);
             indicatorText.anchor.setTo(0.5, 0.5);
 
@@ -132,7 +132,7 @@ class GameLevel extends Phaser.State {
             this.UI.networkHighlights[i] = networkHighlight;
         }
 
-        
+
     }
 
     createFixedUI() {
@@ -143,7 +143,7 @@ class GameLevel extends Phaser.State {
         var sidebarLeft = this.game.width - sidebarWidth
 
         this.UI.uiGraphics = this.game.add.graphics(0, 0);
-        
+
         // Draw sidebar
         this.UI.uiGraphics.beginFill(0x404040, 1);
         this.UI.uiGraphics.drawRect(sidebarLeft, 0, sidebarWidth, this.game.height);
@@ -209,9 +209,9 @@ class GameLevel extends Phaser.State {
 
 
         this.UI.fixedGroup.addMultiple([
-            this.UI.uiGraphics, 
-            this.UI.levelText, 
-            this.UI.exitButton, 
+            this.UI.uiGraphics,
+            this.UI.levelText,
+            this.UI.exitButton,
             this.UI.basicTowersText,
             this.UI.selectedTowerPreview,
             this.UI.specialTowersText,
@@ -281,7 +281,7 @@ class GameLevel extends Phaser.State {
             descriptionString += '\nCosts ' + this.UI.selectedTower.const.energyCost + ' energy to build';
         }
         if(this.UI.selectedTower.prototype instanceof TargetingTower) {
-            descriptionString += '\nRange: ' + this.UI.selectedTower.const.range;   
+            descriptionString += '\nRange: ' + this.UI.selectedTower.const.range;
         }
 
         this.UI.descriptionText.text = descriptionString;
@@ -375,7 +375,7 @@ class GameLevel extends Phaser.State {
         if(this.getTower(tile.gridX, tile.gridY) == null && tile.type == Tile.TileType.wirePath) {
             this.createTower(this.UI.selectedTower, tile.gridX, tile.gridY);
         }
-        
+
     }
 
     networkPowerChanged(network) {
@@ -404,7 +404,7 @@ class GameLevel extends Phaser.State {
         if(this.wavesFinished && this.enemies.total == 0) {
             alert('Level won!');
         }
-        
+
 
         this.game.physics.arcade.collide(this.projectiles, this.enemies, this.projectileHitEnemy);
     }
@@ -416,8 +416,8 @@ class GameLevel extends Phaser.State {
         }
     }
 
-    spawnEnemy(enemyClass) {
-        var enemy = new enemyClass(this.game, null, null, this.enemyPath);
+    spawnEnemy(enemyClass, x, y) {
+        var enemy = new enemyClass(this.game, this, x, y, this.enemyPath);
         enemy.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
         this.enemies.add(enemy);
     }
@@ -449,14 +449,14 @@ class GameLevel extends Phaser.State {
             } else {
                 return;
             }
-        } 
+        }
 
         tower.scale.setTo(this.map.tileScaleFactor, this.map.tileScaleFactor);
 
         this.towers.add(tower);
         this.addTowerToNetwork(tower);
 
-        
+
     }
 
     addTowerToNetwork(tower) {
@@ -511,11 +511,3 @@ class LabelButton extends Phaser.Button {
 
 
 }
-
-
-
-
-
-
-
-
