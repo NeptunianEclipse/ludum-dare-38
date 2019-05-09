@@ -11,4 +11,4 @@ Special thanks to:
 - NZObiwan for the ideas and implementation of two towers and two enemies
 - EeveeDinah for some improved tower and enemy sprites
 
-[itch.io](Play the game on https://neptunianeclipse.itch.io/debug-defence)
+[Play the game on itch.io](https://neptunianeclipse.itch.io/debug-defence)
